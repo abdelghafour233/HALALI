@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
-import { Send, Loader2, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Send, Loader2, CheckCircle, ShoppingCart } from 'lucide-react';
 import { MOROCCAN_CITIES } from '../constants';
-import { OrderFormData, OrderStatus } from '../types';
+import { OrderFormData, OrderStatus, Product } from '../types';
 
 interface OrderFormProps {
-  productName: string;
-  price: number;
+  selectedProduct: Product;
 }
 
-const OrderForm: React.FC<OrderFormProps> = ({ productName, price }) => {
+const OrderForm: React.FC<OrderFormProps> = ({ selectedProduct }) => {
   const [formData, setFormData] = useState<OrderFormData>({
     fullName: '',
     city: '',
     phone: ''
   });
   const [status, setStatus] = useState<OrderStatus>('idle');
+
+  // Reset status when product changes
+  useEffect(() => {
+    setStatus('idle');
+  }, [selectedProduct.id]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,8 +29,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ productName, price }) => {
     // Simulate API call
     setTimeout(() => {
       setStatus('success');
-      // In a real app, you would send this data to a backend or Google Sheet here
-      console.log('Order Submitted:', formData);
+      console.log('Order Submitted:', { product: selectedProduct.name, ...formData });
     }, 1500);
   };
 
@@ -36,22 +39,24 @@ const OrderForm: React.FC<OrderFormProps> = ({ productName, price }) => {
 
   if (status === 'success') {
     return (
-      <div id="order-form" className="bg-emerald-50 border border-emerald-200 rounded-2xl p-8 text-center shadow-lg transform transition-all">
-        <div className="flex justify-center mb-4">
-          <CheckCircle className="w-16 h-16 text-emerald-500" />
+      <div id="order-form" className="bg-zinc-900 border-2 border-green-600 rounded-3xl p-8 text-center shadow-2xl transform transition-all">
+        <div className="flex justify-center mb-6">
+          <div className="w-20 h-20 bg-green-900/30 rounded-full flex items-center justify-center">
+            <CheckCircle className="w-10 h-10 text-green-500" />
+          </div>
         </div>
-        <h3 className="text-2xl font-bold text-emerald-800 mb-2">شكراً لطلبك!</h3>
-        <p className="text-emerald-700 mb-4">
-          تم استلام طلبك بنجاح. سنقوم بالاتصال بك على الرقم 
-          <span className="font-bold mx-1" dir="ltr">{formData.phone}</span>
-          قريباً لتأكيد الطلب والعنوان.
+        <h3 className="text-3xl font-bold text-white mb-2">شكراً لطلبك!</h3>
+        <p className="text-zinc-400 mb-6">
+          تم حجز <span className="text-green-400 font-bold">{selectedProduct.name}</span> بنجاح.
+          <br/>
+          سنتصل بك على <span className="font-mono text-white" dir="ltr">{formData.phone}</span> للتأكيد.
         </p>
         <button 
           onClick={() => {
             setStatus('idle');
             setFormData({ fullName: '', city: '', phone: '' });
           }}
-          className="text-emerald-600 underline hover:text-emerald-800"
+          className="text-green-500 font-bold hover:text-green-400 hover:underline"
         >
           طلب منتج آخر
         </button>
@@ -60,22 +65,28 @@ const OrderForm: React.FC<OrderFormProps> = ({ productName, price }) => {
   }
 
   return (
-    <div id="order-form" className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-      <div className="bg-emerald-600 p-4 text-center">
-        <h3 className="text-white font-bold text-xl">املأ الاستمارة للطلب الآن</h3>
-        <p className="text-emerald-100 text-sm mt-1">الدفع عند الاستلام - توصيل لجميع المدن</p>
+    <div id="order-form" className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-zinc-100">
+      <div className="bg-black p-6 text-center border-b-4 border-green-600">
+        <h3 className="text-white font-bold text-2xl flex items-center justify-center gap-2">
+          <ShoppingCart className="w-6 h-6 text-green-500" />
+          أكمل طلبك الآن
+        </h3>
+        <p className="text-zinc-400 text-sm mt-2">يرجى ملء المعلومات لاستلام المنتج</p>
       </div>
       
-      <div className="p-6 md:p-8">
-        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-800 text-sm text-center">
-          <span className="font-bold block text-lg mb-1">{price} درهم</span>
-          {productName}
+      <div className="p-6 md:p-10">
+        <div className="mb-8 p-4 bg-green-50 border border-green-100 rounded-xl flex items-center justify-between">
+          <div>
+             <span className="text-xs text-green-800 font-bold uppercase tracking-wider">المنتج المختار</span>
+             <h4 className="font-bold text-zinc-900">{selectedProduct.name}</h4>
+          </div>
+          <span className="font-bold text-xl text-green-700">{selectedProduct.price} DH</span>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
-              الاسم الكامل <span className="text-red-500">*</span>
+            <label htmlFor="fullName" className="block text-sm font-bold text-zinc-700 mb-2">
+              الاسم الكامل
             </label>
             <input
               type="text"
@@ -84,14 +95,14 @@ const OrderForm: React.FC<OrderFormProps> = ({ productName, price }) => {
               required
               value={formData.fullName}
               onChange={handleChange}
-              placeholder="مثال: محمد العلوي"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+              placeholder="الاسم واللقب"
+              className="w-full px-4 py-4 bg-zinc-50 border-2 border-zinc-200 rounded-xl focus:ring-0 focus:border-green-500 outline-none transition-all font-medium"
             />
           </div>
 
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-              رقم الهاتف <span className="text-red-500">*</span>
+            <label htmlFor="phone" className="block text-sm font-bold text-zinc-700 mb-2">
+              رقم الهاتف
             </label>
             <input
               type="tel"
@@ -100,15 +111,15 @@ const OrderForm: React.FC<OrderFormProps> = ({ productName, price }) => {
               required
               value={formData.phone}
               onChange={handleChange}
-              placeholder="مثال: 0612345678"
+              placeholder="06XXXXXXXX"
               dir="ltr"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-right"
+              className="w-full px-4 py-4 bg-zinc-50 border-2 border-zinc-200 rounded-xl focus:ring-0 focus:border-green-500 outline-none transition-all text-right font-medium"
             />
           </div>
 
           <div>
-            <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
-              المدينة <span className="text-red-500">*</span>
+            <label htmlFor="city" className="block text-sm font-bold text-zinc-700 mb-2">
+              المدينة
             </label>
             <select
               id="city"
@@ -116,7 +127,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ productName, price }) => {
               required
               value={formData.city}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all bg-white"
+              className="w-full px-4 py-4 bg-zinc-50 border-2 border-zinc-200 rounded-xl focus:ring-0 focus:border-green-500 outline-none transition-all"
             >
               <option value="" disabled>اختر مدينتك</option>
               {MOROCCAN_CITIES.map((city) => (
@@ -128,24 +139,20 @@ const OrderForm: React.FC<OrderFormProps> = ({ productName, price }) => {
           <button
             type="submit"
             disabled={status === 'submitting'}
-            className="w-full mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 transform active:scale-95"
+            className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 transform active:scale-[0.98]"
           >
             {status === 'submitting' ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                <span>جاري الإرسال...</span>
+                <span>جاري التأكيد...</span>
               </>
             ) : (
               <>
-                <span>تأكيد الطلب الآن</span>
+                <span>تأكيد الطلب (الدفع عند الاستلام)</span>
                 <Send className="w-5 h-5 transform rotate-180" />
               </>
             )}
           </button>
-          
-          <p className="text-center text-xs text-gray-500 mt-4">
-            نحترم خصوصيتك، معلوماتك تستخدم فقط لتوصيل الطلب.
-          </p>
         </form>
       </div>
     </div>
