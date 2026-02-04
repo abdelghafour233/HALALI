@@ -23,4 +23,11 @@ export interface OrderFormData {
   phone: string;
 }
 
+export interface SiteSettings {
+  facebookPixelId: string;
+  googleSheetUrl: string;
+  eventBannerText: string;
+  isBannerActive: boolean;
+}
+
 export type OrderStatus = 'idle' | 'submitting' | 'success' | 'error';
