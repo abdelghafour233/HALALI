@@ -12,8 +12,8 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleTheme }) => {
       <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
         <div className="flex items-center gap-2 text-green-600 dark:text-green-500">
           <ShoppingBag className="w-6 h-6" />
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-wide">
-            متجر <span className="text-green-600 dark:text-green-500">المغرب</span>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-wide font-sans">
+            STORE<span className="text-green-600 dark:text-green-500">HALAL</span>
           </h1>
         </div>
         
