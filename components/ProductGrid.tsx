@@ -1,6 +1,7 @@
-import React from 'react';
-import { Product } from '../types';
-import { ShoppingCart, Eye } from 'lucide-react';
+import React, { useState } from 'react';
+import { Product, CategoryId } from '../types';
+import { ShoppingCart, Eye, Filter } from 'lucide-react';
+import { CATEGORIES } from '../constants';
 
 interface ProductGridProps {
   products: Product[];
@@ -9,13 +10,45 @@ interface ProductGridProps {
 }
 
 const ProductGrid: React.FC<ProductGridProps> = ({ products, currentProductId, onProductSelect }) => {
+  const [activeCategory, setActiveCategory] = useState<CategoryId>('all');
+
+  const filteredProducts = activeCategory === 'all' 
+    ? products 
+    : products.filter(p => p.category === activeCategory);
+
   return (
     <section className="py-16 bg-gray-50 dark:bg-zinc-950 transition-colors duration-300">
       <div className="max-w-6xl mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">منتجات أخرى قد تعجبك</h2>
+        <h2 className="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white">تصفح منتجاتنا</h2>
         
+        {/* Category Tabs */}
+        <div className="flex flex-wrap justify-center gap-3 mb-12">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id)}
+              className={`px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 border ${
+                activeCategory === cat.id
+                  ? 'bg-green-600 text-white border-green-600 shadow-lg shadow-green-500/20'
+                  : 'bg-white dark:bg-zinc-900 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-zinc-800 hover:border-green-400 dark:hover:border-green-700'
+              }`}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+
+        {/* Empty State */}
+        {filteredProducts.length === 0 && (
+          <div className="text-center py-10 text-gray-500 dark:text-gray-400">
+            <Filter className="w-12 h-12 mx-auto mb-3 opacity-50" />
+            <p>لا توجد منتجات في هذا التصنيف حالياً.</p>
+          </div>
+        )}
+
+        {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <div 
               key={product.id} 
               className={`group bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden border transition-all duration-300 ${
@@ -35,6 +68,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, currentProductId, o
                         تخفيض
                     </div>
                 )}
+                <div className="absolute top-2 left-2 bg-black/50 backdrop-blur-sm text-white text-xs px-2 py-1 rounded">
+                  {CATEGORIES.find(c => c.id === product.category)?.name}
+                </div>
               </div>
               
               <div className="p-6">

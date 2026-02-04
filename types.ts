@@ -1,3 +1,10 @@
+export type CategoryId = 'all' | 'watches' | 'glasses' | 'car' | 'misc';
+
+export interface Category {
+  id: CategoryId;
+  name: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -7,6 +14,7 @@ export interface Product {
   oldPrice?: number;
   imageUrl: string;
   features: string[];
+  category: CategoryId;
 }
 
 export interface OrderFormData {
