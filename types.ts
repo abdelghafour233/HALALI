@@ -31,3 +31,16 @@ export interface SiteSettings {
 }
 
 export type OrderStatus = 'idle' | 'submitting' | 'success' | 'error';
+
+export type OrderStatusType = 'new' | 'confirmed' | 'shipped' | 'cancelled';
+
+export interface Order {
+  id: string;
+  customerName: string;
+  city: string;
+  phone: string;
+  productName: string;
+  price: number;
+  status: OrderStatusType;
+  date: string;
+}

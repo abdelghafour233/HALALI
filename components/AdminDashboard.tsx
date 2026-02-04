@@ -1,24 +1,28 @@
 import React, { useState } from 'react';
-import { Product, SiteSettings, CategoryId } from '../types';
+import { Product, SiteSettings, CategoryId, Order, OrderStatusType } from '../types';
 import { CATEGORIES } from '../constants';
-import { Plus, Trash2, Edit, Save, X, Image as ImageIcon, Settings, Package, LayoutDashboard } from 'lucide-react';
+import { Plus, Trash2, Edit, Save, X, Image as ImageIcon, Settings, Package, LayoutDashboard, ShoppingCart, CheckCircle, Truck, XCircle, Clock } from 'lucide-react';
 
 interface AdminDashboardProps {
   products: Product[];
   settings: SiteSettings;
+  orders: Order[];
   onUpdateProducts: (products: Product[]) => void;
   onUpdateSettings: (settings: SiteSettings) => void;
+  onUpdateOrders: (orders: Order[]) => void;
   onClose: () => void;
 }
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ 
   products, 
   settings, 
+  orders,
   onUpdateProducts, 
   onUpdateSettings,
+  onUpdateOrders,
   onClose 
 }) => {
-  const [activeTab, setActiveTab] = useState<'products' | 'settings'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'settings' | 'orders'>('orders');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
@@ -93,6 +97,29 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setFormData({ ...formData, features: [...formData.features, ''] });
   };
 
+  // Order Management
+  const handleOrderStatusChange = (orderId: string, newStatus: OrderStatusType) => {
+    const updatedOrders = orders.map(order => 
+      order.id === orderId ? { ...order, status: newStatus } : order
+    );
+    onUpdateOrders(updatedOrders);
+  };
+
+  const handleDeleteOrder = (orderId: string) => {
+    if (window.confirm('هل أنت متأكد من حذف هذا الطلب؟')) {
+      onUpdateOrders(orders.filter(o => o.id !== orderId));
+    }
+  };
+
+  const getStatusBadge = (status: OrderStatusType) => {
+    switch (status) {
+      case 'new': return <span className="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded flex items-center gap-1 w-fit"><Clock className="w-3 h-3"/> جديد</span>;
+      case 'confirmed': return <span className="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded flex items-center gap-1 w-fit"><CheckCircle className="w-3 h-3"/> مؤكد</span>;
+      case 'shipped': return <span className="bg-purple-100 text-purple-800 text-xs font-bold px-2 py-1 rounded flex items-center gap-1 w-fit"><Truck className="w-3 h-3"/> تم الشحن</span>;
+      case 'cancelled': return <span className="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded flex items-center gap-1 w-fit"><XCircle className="w-3 h-3"/> ملغى</span>;
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-gray-100 dark:bg-zinc-950 z-50 overflow-y-auto">
       {/* Admin Header */}
@@ -116,6 +143,20 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         {/* Sidebar */}
         <div className="w-full md:w-64 flex-shrink-0">
           <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-lg overflow-hidden sticky top-24">
+            <button
+              onClick={() => setActiveTab('orders')}
+              className={`w-full flex items-center gap-3 p-4 font-bold transition-colors ${
+                activeTab === 'orders' 
+                  ? 'bg-green-600 text-white' 
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800'
+              }`}
+            >
+              <ShoppingCart className="w-5 h-5" />
+              الطلبيات
+              <span className="mr-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                {orders.filter(o => o.status === 'new').length}
+              </span>
+            </button>
             <button
               onClick={() => setActiveTab('products')}
               className={`w-full flex items-center gap-3 p-4 font-bold transition-colors ${
@@ -143,6 +184,81 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
         {/* Main Content */}
         <div className="flex-grow">
+          
+          {/* Orders Tab */}
+          {activeTab === 'orders' && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h3 className="text-2xl font-bold text-gray-800 dark:text-white">إدارة الطلبيات</h3>
+                <div className="text-sm text-gray-500">
+                  مجموع الطلبات: {orders.length}
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-gray-200 dark:border-zinc-800 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 dark:bg-zinc-950 border-b border-gray-200 dark:border-zinc-800">
+                      <tr>
+                        <th className="p-4 text-right text-sm font-bold text-gray-600 dark:text-gray-400">التاريخ</th>
+                        <th className="p-4 text-right text-sm font-bold text-gray-600 dark:text-gray-400">العميل</th>
+                        <th className="p-4 text-right text-sm font-bold text-gray-600 dark:text-gray-400">المنتج</th>
+                        <th className="p-4 text-right text-sm font-bold text-gray-600 dark:text-gray-400">السعر</th>
+                        <th className="p-4 text-right text-sm font-bold text-gray-600 dark:text-gray-400">الحالة</th>
+                        <th className="p-4 text-center text-sm font-bold text-gray-600 dark:text-gray-400">إجراءات</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orders.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="p-8 text-center text-gray-500">لا توجد طلبات حتى الآن</td>
+                        </tr>
+                      ) : (
+                        orders.slice().reverse().map((order) => (
+                          <tr key={order.id} className="border-b border-gray-100 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800/50">
+                            <td className="p-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                              {order.date}
+                            </td>
+                            <td className="p-4">
+                              <div className="font-bold text-gray-800 dark:text-white">{order.customerName}</div>
+                              <div className="text-xs text-gray-500 font-mono" dir="ltr">{order.phone}</div>
+                              <div className="text-xs text-gray-500">{order.city}</div>
+                            </td>
+                            <td className="p-4 text-sm text-gray-800 dark:text-gray-200 max-w-[200px] truncate">
+                               {order.productName}
+                            </td>
+                            <td className="p-4 font-bold text-green-600 whitespace-nowrap">{order.price} DH</td>
+                            <td className="p-4">
+                              {getStatusBadge(order.status)}
+                            </td>
+                            <td className="p-4 flex justify-center gap-2">
+                              <select
+                                value={order.status}
+                                onChange={(e) => handleOrderStatusChange(order.id, e.target.value as OrderStatusType)}
+                                className="text-sm border rounded p-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white outline-none focus:border-green-500"
+                              >
+                                <option value="new">جديد</option>
+                                <option value="confirmed">مؤكد</option>
+                                <option value="shipped">تم الشحن</option>
+                                <option value="cancelled">ملغى</option>
+                              </select>
+                              <button 
+                                onClick={() => handleDeleteOrder(order.id)}
+                                className="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                                title="حذف الطلب"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
           
           {/* Products Tab */}
           {activeTab === 'products' && (

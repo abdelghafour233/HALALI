@@ -5,9 +5,10 @@ import { OrderFormData, OrderStatus, Product } from '../types';
 
 interface OrderFormProps {
   selectedProduct: Product;
+  onSubmit: (data: OrderFormData) => void;
 }
 
-const OrderForm: React.FC<OrderFormProps> = ({ selectedProduct }) => {
+const OrderForm: React.FC<OrderFormProps> = ({ selectedProduct, onSubmit }) => {
   const [formData, setFormData] = useState<OrderFormData>({
     fullName: '',
     city: '',
@@ -26,10 +27,10 @@ const OrderForm: React.FC<OrderFormProps> = ({ selectedProduct }) => {
 
     setStatus('submitting');
 
-    // Simulate API call
+    // Simulate API call and then submit to parent
     setTimeout(() => {
+      onSubmit(formData);
       setStatus('success');
-      console.log('Order Submitted:', { product: selectedProduct.name, ...formData });
     }, 1500);
   };
 

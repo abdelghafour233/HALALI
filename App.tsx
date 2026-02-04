@@ -7,7 +7,7 @@ import Footer from './components/Footer';
 import ProductGrid from './components/ProductGrid';
 import AdminDashboard from './components/AdminDashboard';
 import { PRODUCTS } from './constants';
-import { Product, SiteSettings } from './types';
+import { Product, SiteSettings, Order, OrderFormData } from './types';
 
 function App() {
   // Application State
@@ -18,6 +18,30 @@ function App() {
     eventBannerText: 'عرض خاص: توصيل مجاني للطلبات فوق 300 درهم!',
     isBannerActive: false
   });
+  
+  // Dummy orders for demonstration
+  const [orders, setOrders] = useState<Order[]>([
+    {
+        id: '101',
+        customerName: 'أحمد العلمي',
+        phone: '0612345678',
+        city: 'الدار البيضاء',
+        productName: 'ساعة الفخامة السوداء',
+        price: 499,
+        status: 'new',
+        date: '2024-03-10'
+    },
+    {
+        id: '102',
+        customerName: 'فاطمة الزهراء',
+        phone: '0698765432',
+        city: 'مراكش',
+        productName: 'نظارات شمسية كلاسيك',
+        price: 199,
+        status: 'shipped',
+        date: '2024-03-09'
+    }
+  ]);
   
   const [selectedProduct, setSelectedProduct] = useState<Product>(products[0]);
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -58,6 +82,20 @@ function App() {
     scrollToForm();
   };
 
+  const handleOrderSubmit = (formData: OrderFormData) => {
+    const newOrder: Order = {
+        id: Date.now().toString(),
+        customerName: formData.fullName,
+        city: formData.city,
+        phone: formData.phone,
+        productName: selectedProduct.name,
+        price: selectedProduct.price,
+        status: 'new',
+        date: new Date().toISOString().split('T')[0]
+    };
+    setOrders([...orders, newOrder]);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 flex flex-col font-sans transition-colors duration-300">
       
@@ -65,8 +103,10 @@ function App() {
         <AdminDashboard 
           products={products}
           settings={settings}
+          orders={orders}
           onUpdateProducts={setProducts}
           onUpdateSettings={setSettings}
+          onUpdateOrders={setOrders}
           onClose={() => setIsAdminOpen(false)}
         />
       ) : (
@@ -105,6 +145,7 @@ function App() {
                     
                     <OrderForm 
                       selectedProduct={selectedProduct}
+                      onSubmit={handleOrderSubmit}
                     />
                   </div>
                 </section>
