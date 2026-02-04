@@ -13,7 +13,7 @@ const ProductHero: React.FC<ProductHeroProps> = ({ product, onOrderClick }) => {
     : 0;
 
   return (
-    <section className="py-12 bg-zinc-950 text-white relative overflow-hidden">
+    <section className="py-12 bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-white relative overflow-hidden transition-colors duration-300">
       {/* Abstract Background Element */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10 pointer-events-none">
          <div className="absolute -top-24 -right-24 w-96 h-96 bg-green-600 rounded-full blur-3xl"></div>
@@ -25,7 +25,7 @@ const ProductHero: React.FC<ProductHeroProps> = ({ product, onOrderClick }) => {
           
           {/* Image Container */}
           <div className="w-full md:w-1/2">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-green-900/20 border-2 border-zinc-800 aspect-square group">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl dark:shadow-green-900/20 border-2 border-white dark:border-zinc-800 aspect-square group">
               {discountPercentage > 0 && (
                 <div className="absolute top-4 right-4 bg-green-600 text-white font-bold px-4 py-1 rounded-full shadow-lg z-10">
                   خصم {discountPercentage}%
@@ -43,26 +43,26 @@ const ProductHero: React.FC<ProductHeroProps> = ({ product, onOrderClick }) => {
           <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-right">
             <div className="flex gap-1 mb-4">
               {[1, 2, 3, 4, 5].map((_, i) => (
-                <Star key={i} className="w-5 h-5 text-green-500 fill-green-500" />
+                <Star key={i} className="w-5 h-5 text-yellow-500 dark:text-green-500 fill-current" />
               ))}
-              <span className="text-zinc-400 text-sm mr-2">(تقييم عالي)</span>
+              <span className="text-gray-500 dark:text-zinc-400 text-sm mr-2">(تقييم عالي)</span>
             </div>
             
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight text-gray-900 dark:text-white">
               {product.name}
             </h1>
             
-            <p className="text-zinc-300 text-lg mb-8 leading-relaxed max-w-lg">
+            <p className="text-gray-600 dark:text-zinc-300 text-lg mb-8 leading-relaxed max-w-lg">
               {product.shortDescription}
             </p>
 
             <div className="flex flex-col w-full gap-6">
               <div className="flex items-center justify-center md:justify-start gap-4">
-                <span className="text-5xl font-bold text-green-500">
+                <span className="text-5xl font-bold text-green-600 dark:text-green-500">
                   {product.price} <span className="text-2xl">درهم</span>
                 </span>
                 {product.oldPrice && (
-                  <span className="text-2xl text-zinc-500 line-through">
+                  <span className="text-2xl text-gray-400 dark:text-zinc-500 line-through">
                     {product.oldPrice}
                   </span>
                 )}
@@ -70,15 +70,15 @@ const ProductHero: React.FC<ProductHeroProps> = ({ product, onOrderClick }) => {
 
               <div className="flex flex-wrap gap-2 justify-center md:justify-start">
                   {product.features.slice(0, 3).map((f, i) => (
-                      <span key={i} className="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full text-xs text-zinc-300 flex items-center gap-1">
-                          <CheckCircle className="w-3 h-3 text-green-500" /> {f}
+                      <span key={i} className="px-3 py-1 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-full text-xs text-gray-700 dark:text-zinc-300 flex items-center gap-1 shadow-sm">
+                          <CheckCircle className="w-3 h-3 text-green-600 dark:text-green-500" /> {f}
                       </span>
                   ))}
               </div>
 
               <button 
                 onClick={onOrderClick}
-                className="w-full md:w-auto bg-green-600 hover:bg-green-500 text-white font-bold py-4 px-12 rounded-xl shadow-lg shadow-green-900/30 transition-all transform hover:-translate-y-1"
+                className="w-full md:w-auto bg-green-600 hover:bg-green-700 dark:hover:bg-green-500 text-white font-bold py-4 px-12 rounded-xl shadow-lg shadow-green-900/20 transition-all transform hover:-translate-y-1"
               >
                 اشترِ الآن - الدفع عند الاستلام
               </button>

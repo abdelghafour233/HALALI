@@ -1,13 +1,25 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" class="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>متجر المغرب - المنتج المميز</title>
     
-    <!-- Tailwind CSS (CDN is fine for simple landing pages) -->
+    <!-- Tailwind CSS with Dark Mode Config -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              // You can extend colors here if needed
+            }
+          }
+        }
+      }
+    </script>
     
     <!-- Google Fonts: Cairo -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,7 +44,7 @@
 }
 </script>
 </head>
-  <body class="bg-gray-50 text-gray-900">
+  <body class="bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-gray-100 transition-colors duration-300">
     <div id="root"></div>
     <!-- Main Entry Point for Vite -->
     <script type="module" src="/index.tsx"></script>
